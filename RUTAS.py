@@ -31,7 +31,7 @@ st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrar
 
 lugares_input = st.text_area(
     "Lista de lugares (uno por línea)",
-    placeholder="Granadilla
+    placeholder="Granadilla\nConcepción\nSan Francisco"
 Concepción
 San Francisco"
 )
@@ -118,4 +118,3 @@ if st.button("Mostrar ruta en mapa"):
 #############################################
 # FIN DEL PROGRAMA
 #############################################
-
