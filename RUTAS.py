@@ -1,81 +1,70 @@
 import streamlit as st
 import pandas as pd
-import math
 import urllib.parse
 
 #############################################
-# FUNCIONES DE CÁLCULO
+# STREAMLIT – OPTIMIZADOR DE RUTAS POR NOMBRES
 #############################################
-def haversine_km(lat1, lon1, lat2, lon2):
-    R = 6371.0
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-    a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dlambda/2)**2
-    return 2 * R * math.asin(math.sqrt(a))
-
-
-def ordenar_rutas(df, centro_lat, centro_lon, incluir_peaje, peso_carga):
-    # Cálculo de distancia
-    df["dist_km"] = df.apply(lambda row: haversine_km(
-        centro_lat, centro_lon, row["lat"], row["lon"]), axis=1)
-
-    # Prioridad primero
-    df = df.sort_values(by=["prioridad", "dist_km"], ascending=[False, False])
-
-    # Ajustes opcionales
-    df["requiere_peaje"] = incluir_peaje
-    df["peso_carga_ton"] = peso_carga
-
-    return df
+st.title("Generador de Rutas con Visualización en Google Maps")
+st.markdown("Ingrese los datos de la ruta y obtenga un enlace directo a Google Maps con el recorrido y tiempos estimados.")
 
 #############################################
-# STREAMLIT UI
+# 1. Datos Generales de la Ruta
 #############################################
-st.title("Optimizador de Rutas — Más Lejana a Más Cercana con Prioridad")
-st.markdown("Herramienta para organizar rutas de alisto tomando en cuenta prioridad, distancia y opciones adicionales.")
+st.header("1. Información general")
+nombre_ruta = st.text_input("Nombre de la ruta")
+fecha_ruta = st.date_input("Fecha de la ruta")
+hora_salida = st.time_input("Hora de salida")
 
-st.header("1. Configuración del Punto de Inicio (Centro)")
-centro_lat = st.number_input("Latitud del centro", value=9.9333, format="%f")
-centro_lon = st.number_input("Longitud del centro", value=-84.0833, format="%f")
+#############################################
+# 2. Origen del Camión
+#############################################
+st.header("2. Punto de salida del camión")
+origen = st.text_input("Dirección de origen (Ej: Bodega Central, Cartago)")
 
-st.header("2. Configuración extra")
-incluir_peaje = st.checkbox("¿Necesita pasar por peaje?")
-peso_carga = st.number_input("Peso de la carga (toneladas)", min_value=0.0, value=1.0, step=0.1)
+#############################################
+# 3. Lugares que debe cubrir la ruta
+#############################################
+st.header("3. Lugares a visitar en la ruta")
+st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrará todos). Ejemplo: Granadilla, Concepción, San Francisco…")
 
-st.header("3. Cargar rutas")
-st.write("Suba un archivo CSV con las columnas: **nombre, lat, lon, prioridad** (prioridad = 1 si es urgente, 0 si no)")
-archivo = st.file_uploader("Subir archivo CSV", type=["csv"]) 
+lugares_input = st.text_area(
+    "Lista de lugares (uno por línea)",
+    placeholder="Granadilla\nConcepción\nSan Francisco"
+)
 
-if archivo:
-    df = pd.read_csv(archivo)
+# Procesar lista
+lugares = [l.strip() for l in lugares_input.split("\n") if l.strip() != ""]
 
-    st.subheader("Vista previa de datos cargados")
-    st.dataframe(df)
+#############################################
+# 4. Generar ruta en Google Maps
+#############################################
+st.header("4. Generar ruta en Google Maps")
 
-    st.header("4. Procesar y ordenar rutas")
-    if st.button("Procesar rutas"):
-        df_ordenado = ordenar_rutas(df.copy(), centro_lat, centro_lon, incluir_peaje, peso_carga)
-
-        st.subheader("Rutas ordenadas")
-        st.dataframe(df_ordenado)
-
-        #############################################################
-        # Google Maps — Crear URL con marcadores en orden
-        #############################################################
-        st.header("5. Ver rutas en Google Maps")
-
-        # Crear una URL para Google Maps con los puntos ordenados
+if st.button("Mostrar ruta en mapa"):
+    if origen == "" or len(lugares) == 0:
+        st.error("Debe ingresar el origen y al menos un lugar de destino.")
+    else:
+        # Crear URL para Google Maps
         base_url = "https://www.google.com/maps/dir/"
+        url = base_url
 
-        # Añadir punto de inicio
-        url = base_url + f"{centro_lat},{centro_lon}/"
+        # Agregar origen
+        url += urllib.parse.quote(origen) + "/"
 
-        # Añadir destinos en el orden calculado
-        for _, row in df_ordenado.iterrows():
-            encoded = urllib.parse.quote(f"{row['lat']},{row['lon']}")
-            url += f"{encoded}/"
+        # Agregar destinos
+        for lugar in lugares:
+            url += urllib.parse.quote(lugar) + "/"
 
-        st.markdown(f"[**Abrir rutas en Google Maps**]({url})")
+        st.subheader("Mapa de Google Maps")
+        st.markdown(f"[**Abrir ruta en Google Maps**]({url})")
 
-        st.success("Proceso completado. Las rutas han sido ordenadas y están listas para verificar en Google Maps.")
+        st.info("El mapa mostrará: tiempo estimado, distancias y orden sugerido según Google Maps.")
+
+#############################################
+# FIN DEL PROGRAMA
+#############################################
+
+
+        
+           
