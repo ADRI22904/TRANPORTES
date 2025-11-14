@@ -23,7 +23,7 @@ hora_salida = st.time_input("Hora de salida")
 st.header("2. Punto de salida del camión")
 origen = st.text_input(
     "Dirección de origen (Ej: Bodega Central, Cartago)"
-))
+)
 
 #############################################
 # 3. Lugares que debe cubrir la ruta
