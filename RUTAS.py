@@ -3,7 +3,8 @@ import pandas as pd
 import urllib.parse
 
 #############################################
-# STREAMLIT – OPTIMIZADOR DE RUTAS POR NOMBRES
+# STREAMLIT – OPTIMIZADOR DE RUTAS POR NOMBRES (CON ORDEN DE LEJOS A CERCA)
+#############################################
 #############################################
 st.title("Generador de Rutas con Visualización en Google Maps")
 st.markdown("Ingrese los datos de la ruta y obtenga un enlace directo a Google Maps con el recorrido y tiempos estimados.")
@@ -30,14 +31,67 @@ st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrar
 
 lugares_input = st.text_area(
     "Lista de lugares (uno por línea)",
-    placeholder="Granadilla\nConcepción\nSan Francisco"
+    placeholder="Granadilla
+Concepción
+San Francisco"
 )
 
 # Procesar lista
-lugares = [l.strip() for l in lugares_input.split("\n") if l.strip() != ""]
+lugares = [l.strip() for l in lugares_input.split("
+") if l.strip() != ""]
 
 #############################################
-# 4. Generar ruta en Google Maps
+# 4. Ordenar lugares de más lejano a más cercano
+st.header("4. Ordenar automáticamente los lugares antes de enviar a Google Maps")
+
+import requests
+
+# Función geocodificar (Nominatim)
+def geocode(lugar):
+    try:
+        resp = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={"q": lugar, "format": "json"},
+            headers={"User-Agent": "streamlit-app"}
+        )
+        data = resp.json()
+        if len(data) > 0:
+            return float(data[0]["lat"]), float(data[0]["lon"])
+    except:
+        return None
+    return None
+
+# Función para distancia Haversine
+import math
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371
+    phi1, phi2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlambda = math.radians(lon2 - lon1)
+    a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2) * math.sin(dlambda/2)**2
+    return 2 * R * math.asin(math.sqrt(a))
+
+lugares_ordenados = []
+
+if origen and len(lugares) > 0:
+    origen_geo = geocode(origen)
+    if origen_geo:
+        origen_lat, origen_lon = origen_geo
+        for l in lugares:
+            geo = geocode(l)
+            if geo:
+                dist = haversine(origen_lat, origen_lon, geo[0], geo[1])
+                lugares_ordenados.append((l, geo[0], geo[1], dist))
+
+        # Ordenar de más lejano a más cercano
+        lugares_ordenados.sort(key=lambda x: x[3], reverse=True)
+
+        st.subheader("Lugares ordenados (de más lejos a más cerca)")
+        for nombre, la, lo, d in lugares_ordenados:
+            st.write(f"{nombre} — {d:.2f} km")
+
+#############################################
+# 5. Generar ruta en Google Maps
 #############################################
 st.header("4. Generar ruta en Google Maps")
 
@@ -65,6 +119,3 @@ if st.button("Mostrar ruta en mapa"):
 # FIN DEL PROGRAMA
 #############################################
 
-
-        
-           
