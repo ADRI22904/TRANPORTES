@@ -32,7 +32,7 @@ st.header("3. Lugares a visitar en la ruta")
 st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrará todos). Ejemplo: Granadilla, Concepción, San Francisco…")
 
 lugares_input = st.text_area(
-    "Lista de lugares (uno por línea),
+    "Lista de lugares (uno por línea)",
     placeholder="Granadilla\nConcepción\nSan Francisco"
 ),
     placeholder="Granadilla\nConcepción\nSan Francisco"
