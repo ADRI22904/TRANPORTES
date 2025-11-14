@@ -35,4 +35,4 @@ lugares_input = st.text_area(
     "Lista de lugares (uno por línea)",
     placeholder="Granadilla\nConcepción\nSan Francisco"
 ),
-    placeholder="Granadilla\nConcepción\nSan Francisco"
+placeholder="Granadilla\nConcepción\nSan Francisco"
