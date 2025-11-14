@@ -21,7 +21,7 @@ hora_salida = st.time_input("Hora de salida")
 # 2. Origen del Camión
 #############################################
 st.header("2. Punto de salida del camión")
-origen = st.text_input("Dirección de origen (Ej: Bodega Central, Cartago)")
+origen = st.text_input("Dirección de origen (Ej: Bodega Central, Cartago))
 
 #############################################
 # 3. Lugares que debe cubrir la ruta
@@ -30,9 +30,9 @@ st.header("3. Lugares a visitar en la ruta")
 st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrará todos). Ejemplo: Granadilla, Concepción, San Francisco…")
 
 lugares_input = st.text_area(
-    "Lista de lugares (uno por línea)",
-    placeholder="Granadilla\\nConcepción\\nSan Francisco"
-)",
+    "Lista de lugares (uno por línea),
+    placeholder="Granadilla\nConcepción\nSan Francisco"
+),
     placeholder="Granadilla\nConcepción\nSan Francisco"
 
 
