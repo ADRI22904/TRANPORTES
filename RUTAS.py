@@ -106,7 +106,7 @@ lugares = [l.strip() for l in lugares_input.split(", ") if l.strip()] if lugares
 
 
 if origen and lugares:
-df_export = pd.DataFrame({
+    df_export = pd.DataFrame({
 "Nombre de ruta": [nombre_ruta]*len(lugares),
 "Fecha": [fecha_ruta]*len(lugares),
 "Hora de salida": [hora_salida]*len(lugares),
