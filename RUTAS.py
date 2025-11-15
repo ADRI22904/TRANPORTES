@@ -1,6 +1,39 @@
 import streamlit as st
 import pandas as pd
+import os
 import urllib.parse
+
+#############################################
+# CONFIGURACIÓN DE ARCHIVOS EXCEL
+#############################################
+
+ARCHIVO_RUTAS = "registro_rutas.xlsx"
+ARCHIVO_PEAJES = "registro_peajes.xlsx"
+
+def guardar_ruta_excel(df_nueva):
+    """Guarda o actualiza el archivo de rutas."""
+    if os.path.exists(ARCHIVO_RUTAS):
+        df_existente = pd.read_excel(ARCHIVO_RUTAS)
+        df_final = pd.concat([df_existente, df_nueva], ignore_index=True)
+    else:
+        df_final = df_nueva
+
+    df_final.to_excel(ARCHIVO_RUTAS, index=False)
+    return df_final
+
+
+def guardar_peajes_excel(df_peajes_nuevo):
+    """Guarda o actualiza el archivo de peajes."""
+    if os.path.exists(ARCHIVO_PEAJES):
+        df_existente = pd.read_excel(ARCHIVO_PEAJES)
+        df_final = pd.concat([df_existente, df_peajes_nuevo], ignore_index=True)
+    else:
+        df_final = df_peajes_nuevo
+
+    df_final.to_excel(ARCHIVO_PEAJES, index=False)
+    return df_final
+
+
 
 #############################################
 # STREAMLIT – OPTIMIZADOR DE RUTAS POR NOMBRES (CON ORDEN DE LEJOS A CERCA)
@@ -101,63 +134,30 @@ if st.button("Mostrar ruta en mapa"):
 st.header("6. Guardar la ruta en Excel")
 
 
-# Procesar lista de lugares de forma segura
-lugares = [l.strip() for l in lugares_input.split(", ") if l.strip()] if lugares_input else []
+if st.button("Guardar en Excel"):
+    if origen and lugares:
+        # Guardar rutas
+        df_ruta = pd.DataFrame({
+            "Nombre ruta": nombre_ruta,
+            "Fecha": [fecha_ruta] * len(lugares),
+            "Hora salida": [hora_salida] * len(lugares),
+            "Origen": [origen] * len(lugares),
+            "Destino": lugares,
+            "Incluye peajes": ["Sí" if pasa_peajes else "No"] * len(lugares),
+            "Total peajes": [total_peajes] * len(lugares)
+        })
 
+        guardar_ruta_excel(df_ruta)
 
-# Configurar Google Sheets
-import gspread
-from google.oauth2.service_account import Credentials
+        # Guardar peajes
+        if pasa_peajes:
+            df_peajes = pd.DataFrame(peajes, columns=["Peaje", "Costo (₡)"])
+            df_peajes["Nombre ruta"] = nombre_ruta
+            guardar_peajes_excel(df_peajes)
 
-
-SCOPE = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-
-
-try:
-    creds = Credentials.from_service_account_file("service_account.json", scopes=SCOPE)
-    client = gspread.authorize(creds)
-    sheet = client.open("Registro Rutas Transporte").sheet1
-    conexion_ok = True
-except Exception:
-    st.error("⚠️ No se pudo conectar a Google Sheets. Asegúrese de subir el archivo service_account.json y que exista una hoja llamada 'Registro Rutas Transporte'.")
-    conexion_ok = False
-
-
-if origen and lugares and conexion_ok:
-    if st.button("Guardar en Google Sheets"):
-        # ---- Preparar filas para la hoja principal ----
-        filas = []
-        for destino in lugares:
-            filas.append([
-                nombre_ruta,
-                str(fecha_ruta),
-                str(hora_salida),
-                origen,
-                destino,
-                "Sí" if pasa_peajes else "No",
-                total_peajes if pasa_peajes else 0
-        ])
-
-
-    # Agregar filas a Google Sheets
-    for fila in filas:
-        sheet.append_row(fila)
-
-
-# ---- Guardar peajes en segunda hoja ----
-    try:
-        hoja_peajes = client.open("Registro Rutas Transporte").worksheet("Peajes")
-    except:
-        hoja_peajes = client.open("Registro Rutas Transporte").add_worksheet(title="Peajes", rows="1000", cols="3")
-        hoja_peajes.append_row(["Nombre ruta", "Peaje", "Costo (₡)"])
-
-
-    if pasa_peajes:
-        for nombre, costo in peajes:
-            hoja_peajes.append_row([nombre_ruta, nombre, costo])
-
-
-    st.success("Toda la información fue guardada en Google Sheets correctamente.")
+        st.success("Datos guardados correctamente en los archivos Excel.")
+    else:
+        st.error("Debe ingresar origen y al menos un lugar para guardar.")
 # FIN DEL PROGRAMA
 
 
