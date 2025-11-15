@@ -32,34 +32,15 @@ st.header("3. Lugares a visitar en la ruta")
 st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrará todos). Ejemplo: Granadilla, Concepción, San Francisco…")
 
 lugares_input = st.text_area(
-    "Lista de lugares (uno por línea)",
-    placeholder="Granadilla Concepción San Francisco")
+    "Lista de lugares (separados por una coma y un espacio)",
+    placeholder="Granadilla, Concepción, San Francisco")
+
 
 #############################################
-# 4. Guardar ruta en Excel
-#############################################
-st.header("4. Guardar la ruta en Excel")
-
-if origen and lugares_input:
-    df_export = pd.DataFrame({
-        "Nombre de ruta": [nombre_ruta]*len(lugares),
-        "Fecha": [fecha_ruta]*len(lugares),
-        "Hora de salida": [hora_salida]*len(lugares),
-        "Origen": [origen]*len(lugares),
-        "Destino": lugares
-    })
-
-    nombre_archivo = f"ruta_{nombre_ruta}.xlsx" if nombre_ruta else "ruta_generada.xlsx"
-
-    if st.button("Guardar en Excel"):
-        df_export.to_excel(nombre_archivo, index=False)
-        st.success(f"Archivo guardado: {nombre_archivo}")
+# 4. Cálculo y visualización de peajes
 
 #############################################
-# 5. Cálculo y visualización de peajes
-
-#############################################
-st.header("5. Costos estimados de peajes")
+st.header("4. Costos estimados de peajes")
 
 st.write("Indique cada peaje por separado si tienen diferentes montos.")
 
@@ -90,9 +71,9 @@ if pasa_peajes:
 else:
     st.info("No se han indicado peajes en esta ruta.")
 
-# 6. Generar ruta en Google Maps
+# 5. Generar ruta en Google Maps
 #############################################
-st.header("6. Generar ruta en Google Maps")
+st.header("5. Generar ruta en Google Maps")
 
 if st.button("Mostrar ruta en mapa"):
     if origen == "" or len(lugares) == 0:
@@ -114,7 +95,40 @@ if st.button("Mostrar ruta en mapa"):
 
         st.info("El mapa mostrará: tiempo estimado, distancias y orden sugerido según Google Maps.")
 
+#############################################
+# 6. Guardar ruta en Excel
+#############################################
+st.header("6. Guardar la ruta en Excel")
 
+
+# Procesar lista de lugares de forma segura
+lugares = [l.strip() for l in lugares_input.split("
+") if l.strip()] if lugares_input else []
+
+
+if origen and lugares:
+df_export = pd.DataFrame({
+"Nombre de ruta": [nombre_ruta]*len(lugares),
+"Fecha": [fecha_ruta]*len(lugares),
+"Hora de salida": [hora_salida]*len(lugares),
+"Origen": [origen]*len(lugares),
+"Destino": lugares
+})
+
+nombre_archivo = "registro_rutas.xlsx"
+
+if st.button("Guardar en Excel"):
+try:
+# Si el archivo existe, cargarlo y agregar nueva información
+df_existente = pd.read_excel(nombre_archivo)
+df_final = pd.concat([df_existente, df_export], ignore_index=True)
+except FileNotFoundError:
+# Si no existe, crear uno nuevo
+df_final = df_export
+
+
+df_final.to_excel(nombre_archivo, index=False)
+st.success(f"La ruta fue agregada al archivo: {nombre_archivo}")
 # FIN DEL PROGRAMA
 
 
