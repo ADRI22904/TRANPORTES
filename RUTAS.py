@@ -57,7 +57,8 @@ if origen and lugares:
 
 #############################################
 # 6. Cálculo y visualización de peajes
-
+#############################################
+st.header("6. Costos estimados de peajes
 #############################################
 st.header("6. Costos estimados de peajes")
 
@@ -91,4 +92,5 @@ else:
     st.info("No se han indicado peajes en esta ruta.")
 
 # FIN DEL PROGRAMA
+
 
