@@ -40,7 +40,7 @@ lugares_input = st.text_area(
 #############################################
 st.header("5. Guardar la ruta en Excel")
 
-if origen and lugares:
+if origen and lugares_input:
     df_export = pd.DataFrame({
         "Nombre de ruta": [nombre_ruta]*len(lugares),
         "Fecha": [fecha_ruta]*len(lugares),
