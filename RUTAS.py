@@ -128,14 +128,14 @@ if origen and lugares and conexion_ok:
         # ---- Preparar filas para la hoja principal ----
         filas = []
         for destino in lugares:
-        filas.append([
-            nombre_ruta,
-            str(fecha_ruta),
-            str(hora_salida),
-            origen,
-            destino,
-            "Sí" if pasa_peajes else "No",
-            total_peajes if pasa_peajes else 0
+            filas.append([
+                nombre_ruta,
+                str(fecha_ruta),
+                str(hora_salida),
+                origen,
+                destino,
+                "Sí" if pasa_peajes else "No",
+                total_peajes if pasa_peajes else 0
         ])
 
 
