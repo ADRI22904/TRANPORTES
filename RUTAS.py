@@ -58,22 +58,36 @@ if origen and lugares:
 #############################################
 # 6. Cálculo y visualización de peajes
 #############################################
+st.header("6. Costos estimados de peajes
+#############################################
 st.header("6. Costos estimados de peajes")
 
-st.write("Seleccione si la ruta pasa por peajes para mostrar el total estimado.")
+st.write("Indique cada peaje por separado si tienen diferentes montos.")
 
 pasa_peajes = st.checkbox("¿La ruta incluye peajes?")
 
-costo_peaje_unitario = st.number_input(
-    "Costo por peaje (₡)", min_value=0, value=450, step=50
-)
-cantidad_peajes = st.number_input(
-    "Cantidad de peajes en la ruta", min_value=0, value=0, step=1
-)
+if pasa_peajes:
+    cantidad = st.number_input(
+        "Cantidad de peajes distintos", min_value=1, value=1, step=1
+    )
 
-if pasa_peajes and cantidad_peajes > 0:
-    total_peajes = costo_peaje_unitario * cantidad_peajes
+    peajes = []
+    total_peajes = 0
+
+    for i in range(cantidad):
+        st.subheader(f"Peaje #{i+1}")
+        nombre = st.text_input(f"Nombre del peaje #{i+1}", key=f"peaje_nombre_{i}")
+        costo = st.number_input(
+            f"Costo del peaje #{i+1} (₡)", min_value=0, value=450, step=50, key=f"peaje_costo_{i}"
+        )
+        peajes.append((nombre, costo))
+        total_peajes += costo
+
     st.subheader(f"Total a pagar en peajes: ₡{total_peajes:,.0f}")
+
+    df_peajes = pd.DataFrame(peajes, columns=["Peaje", "Costo (₡)"])
+    st.table(df_peajes)
+
 else:
     st.info("No se han indicado peajes en esta ruta.")
 
