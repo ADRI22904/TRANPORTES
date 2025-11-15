@@ -102,8 +102,7 @@ st.header("6. Guardar la ruta en Excel")
 
 
 # Procesar lista de lugares de forma segura
-lugares = [l.strip() for l in lugares_input.split("
-") if l.strip()] if lugares_input else []
+lugares = [l.strip() for l in lugares_input.split(", ") if l.strip()] if lugares_input else []
 
 
 if origen and lugares:
