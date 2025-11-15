@@ -36,9 +36,9 @@ lugares_input = st.text_area(
     placeholder="Granadilla Concepción San Francisco")
 
 #############################################
-# 5. Guardar ruta en Excel
+# 4. Guardar ruta en Excel
 #############################################
-st.header("5. Guardar la ruta en Excel")
+st.header("4. Guardar la ruta en Excel")
 
 if origen and lugares_input:
     df_export = pd.DataFrame({
@@ -56,10 +56,10 @@ if origen and lugares_input:
         st.success(f"Archivo guardado: {nombre_archivo}")
 
 #############################################
-# 6. Cálculo y visualización de peajes
+# 5. Cálculo y visualización de peajes
 
 #############################################
-st.header("6. Costos estimados de peajes")
+st.header("5. Costos estimados de peajes")
 
 st.write("Indique cada peaje por separado si tienen diferentes montos.")
 
@@ -89,6 +89,31 @@ if pasa_peajes:
 
 else:
     st.info("No se han indicado peajes en esta ruta.")
+
+# 6. Generar ruta en Google Maps
+#############################################
+st.header("6. Generar ruta en Google Maps")
+
+if st.button("Mostrar ruta en mapa"):
+    if origen == "" or len(lugares) == 0:
+        st.error("Debe ingresar el origen y al menos un lugar de destino.")
+    else:
+        # Crear URL para Google Maps
+        base_url = "https://www.google.com/maps/dir/"
+        url = base_url
+
+        # Agregar origen
+        url += urllib.parse.quote(origen) + "/"
+
+        # Agregar destinos
+        for lugar in lugares:
+            url += urllib.parse.quote(lugar) + "/"
+
+        st.subheader("Mapa de Google Maps")
+        st.markdown(f"[**Abrir ruta en Google Maps**]({url})")
+
+        st.info("El mapa mostrará: tiempo estimado, distancias y orden sugerido según Google Maps.")
+
 
 # FIN DEL PROGRAMA
 
