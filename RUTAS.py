@@ -36,7 +36,7 @@ lugares_input = st.text_area(
     San Francisco")
 
 # Procesar lista
-lugares = [l.strip() for l in lugares_input.split("") if l.strip() != ""]
+lugares = [l.strip() for l in lugares_input.split(" ") if l.strip() != ""]
 
 #############################################
 # 4. Generar ruta en Google Maps
