@@ -68,7 +68,10 @@ lugares_input = st.text_area(
     "Lista de lugares (separados por una coma y un espacio)",
     placeholder="Granadilla, Concepción, San Francisco")
 
-
+if lugares_input.strip():
+    lugares = [l.strip() for l in lugares_input.split(",") if l.strip()]
+else:
+    lugares = []
 #############################################
 # 4. Cálculo y visualización de peajes
 
