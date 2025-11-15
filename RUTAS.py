@@ -107,23 +107,23 @@ lugares = [l.strip() for l in lugares_input.split(", ") if l.strip()] if lugares
 
 if origen and lugares:
     df_export = pd.DataFrame({
-"Nombre de ruta": [nombre_ruta]*len(lugares),
-"Fecha": [fecha_ruta]*len(lugares),
-"Hora de salida": [hora_salida]*len(lugares),
-"Origen": [origen]*len(lugares),
-"Destino": lugares
-})
+        "Nombre de ruta": [nombre_ruta]*len(lugares),
+        "Fecha": [fecha_ruta]*len(lugares),
+        "Hora de salida": [hora_salida]*len(lugares),
+        "Origen": [origen]*len(lugares),
+        "Destino": lugares
+    })
 
 nombre_archivo = "registro_rutas.xlsx"
 
 if st.button("Guardar en Excel"):
-try:
-# Si el archivo existe, cargarlo y agregar nueva información
-df_existente = pd.read_excel(nombre_archivo)
-df_final = pd.concat([df_existente, df_export], ignore_index=True)
-except FileNotFoundError:
-# Si no existe, crear uno nuevo
-df_final = df_export
+    try:
+        # Si el archivo existe, cargarlo y agregar nueva información
+        df_existente = pd.read_excel(nombre_archivo)
+        df_final = pd.concat([df_existente, df_export], ignore_index=True)
+    except FileNotFoundError:
+        # Si no existe, crear uno nuevo
+        df_final = df_export
 
 
 df_final.to_excel(nombre_archivo, index=False)
