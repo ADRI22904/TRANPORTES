@@ -30,9 +30,7 @@ st.write("Ingrese los lugares en orden aproximado o desordenado (el mapa mostrar
 
 lugares_input = st.text_area(
     "Lista de lugares (uno por línea)",
-    placeholder = "Granadilla
-    Concepción
-    San Francisco")
+    placeholder = "Granadilla Concepción San Francisco")
 
 # Procesar lista
 lugares = [l.strip() for l in lugares_input.split(" ") if l.strip() != ""]
